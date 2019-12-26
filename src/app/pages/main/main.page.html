@@ -1,0 +1,25 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Main</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list lines="full" class="ion-no-margin ion-no-padding">
+    <ion-item>
+      <ion-label position="stacked">Example</ion-label>
+      <ion-input type="text" name="example" [(ngModel)]="example"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-button expand="block" type="button" (click)="btn_pressed()">Button</ion-button>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">Version</ion-label>
+      <ion-input type="text" name="version" [(ngModel)]="version"></ion-input>
+    </ion-item>
+  </ion-list>
+
+</ion-content>

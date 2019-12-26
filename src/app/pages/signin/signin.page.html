@@ -1,0 +1,31 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Signin</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list lines="full" class="ion-no-margin ion-no-padding">
+    <div *ngIf="authenticated">
+      <ion-item>
+        <ion-label position="stacked">Benutzername</ion-label>
+        <ion-input type="text" name="username" [(ngModel)]="username" readonly></ion-input>
+      </ion-item>
+    </div>
+    <ion-item>
+      <div *ngIf="authenticated">
+        <ion-button expand="block" type="button" (click)="logout()">
+          Logout
+        </ion-button>
+      </div>
+      <div *ngIf="!authenticated">
+        <ion-button expand="block" type="button" (click)="login()">
+          Login
+        </ion-button>
+      </div>
+    </ion-item>
+  </ion-list>
+</ion-content>

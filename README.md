@@ -8,3 +8,6 @@ Ionic Template with OAuth2
 `npm install`
 3. Start project, open your IDE and start coding
 `ionic serve`
+
+## Compile as PWA
+`ionic build prod`

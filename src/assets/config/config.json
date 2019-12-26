@@ -1,0 +1,9 @@
+{
+    "version": "0.0.1.0",
+    "loglevel": 4,
+    "authorizationUrl": "http://localhost:8080/OAuth2/Login",
+    "tokenUrl": "http://localhost:8080/OAuth2/token",
+    "resourceUrl": "https://someresource.deluxxe.ch/api/v1/",
+    "redirectUri": "http%3A%2F%2Flocalhost%3A8100%2Fmenu%2Fsignin",
+    "clientId": "testapp"
+}
