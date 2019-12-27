@@ -3,6 +3,7 @@ import { LoggerService } from './logger.service';
 import { AppConfigurationService } from './app-configuration.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
+import { Subject } from 'rxjs/Subject';
 import { LocalPersistenceService } from './local-persistence.service';
 
 @Injectable({
@@ -14,17 +15,40 @@ export class OauthService {
     private logger: LoggerService,
     private config: AppConfigurationService,
     private settings: LocalPersistenceService,
-    private http: HttpClient) { }
+    private http: HttpClient) {
+      this.authenticated = this.settings.getAuthenticated();
+      this.auth.next(this.authenticated);
+      this.auth.subscribe(
+        auth => {
+          this.authenticated = auth;
+          this.settings.setAuthenticated(auth);
+        }
+      );
+     }
 
   private authenticated: boolean = false;
+  private auth = new Subject<boolean>();
+
+  getAuthObservable() {
+    return this.auth.asObservable();
+  }
+
+  isAuthenticated() {
+    return this.authenticated;
+  }
 
   login() {
     let url = this.config.authorizationUrl;
     url += '?response_type=code';
     url += '&client_id=' + this.config.clientId;
     url += '&redirect_uri=' + this.config.redirectUri;
+    url += '&scope=' + this.config.openIdScope;
     this.logger.debug('Url: ' + url);
     window.location.href = url;
+  }
+
+  logout() {
+    this.auth.next(false);
   }
 
   retreiveToken(state: string, code: string, grantType: string) {
@@ -50,6 +74,7 @@ export class OauthService {
             this.logger.info('Token received' + data);
             if(data['access_token'] !== null && data['refresh_token'] !== null) {
               this.settings.setTokens(data['access_token'], data['refresh_token']);
+              this.auth.next(true);
               subscriber.complete();
             } else {
               this.logger.info('cant find token');
@@ -68,23 +93,40 @@ export class OauthService {
     });
   }
 
+  getResourceData(resource: string) {
+    return this.getData(this.urlTrailer(this.config.resourceUrl) + resource);
+  }
+
+  getUserinfo() {
+    console.log("Authenticated: " + this.authenticated);
+    return this.getData(this.config.userinfoUrl);
+  }
 
   private getDataNoAuthCheck(resource: string) {
     const httpOptions = {
       headers: new HttpHeaders({
-        Accept: 'application/fhir+json; fhirVersion=4.0',
+        //Accept: 'application/fhir+json; fhirVersion=4.0',
+        Accept: 'application/json',
         Authorization: 'Bearer ' + this.settings.getAccessToken()
       })
     };
-    return this.http.get(this.config.resourceUrl + "/" + resource, httpOptions);
+    return this.http.get(resource, httpOptions);
   }
 
-  getData(resource: string) {
+  private urlTrailer(url: string) {
+    if(url == null || url.endsWith("/")) {
+      return url;
+    }
+    return url + "/";
+  }
+
+  private getData(resource: string) {
     this.logger.info('getData for: ' + resource);
     return new Observable(subscriber => {
       if (!this.authenticated) {
         this.logger.warn('user is not authenticated');
         subscriber.error('User is not signed in');
+        return;
       }
       this.logger.debug('First try to get data');
       this.getDataNoAuthCheck(resource).subscribe(
@@ -100,7 +142,7 @@ export class OauthService {
             x => { console.log('this will never happen...'); },
             error => {
               this.logger.error('refresh failed, looks like you logged out');
-              this.authenticated = false;
+              this.auth.next(false);
               subscriber.error(error);
             },
             () => {
@@ -112,7 +154,7 @@ export class OauthService {
                 },
                 error => {
                   this.logger.error('Second try failed.. will logout');
-                  this.authenticated = false;
+                  this.auth.next(false);
                   subscriber.error(error);
                 }
               );

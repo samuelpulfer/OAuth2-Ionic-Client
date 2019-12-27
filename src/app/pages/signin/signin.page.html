@@ -10,6 +10,10 @@
 <ion-content>
   <ion-list lines="full" class="ion-no-margin ion-no-padding">
     <div *ngIf="authenticated">
+      <ion-item *ngIf="name != null">
+        <ion-label position="stacked">Name</ion-label>
+        <ion-input type="text" name="name" [(ngModel)]="name" readonly></ion-input>
+      </ion-item>
       <ion-item>
         <ion-label position="stacked">Benutzername</ion-label>
         <ion-input type="text" name="username" [(ngModel)]="username" readonly></ion-input>

@@ -9,10 +9,12 @@ export class AppConfigurationService {
   version: string;
   loglevel: number;
   authorizationUrl: string;
+  userinfoUrl: string;
   tokenUrl: string;
   resourceUrl: string;
   redirectUri: string;
   clientId: string;
+  openIdScope: string;
 
   constructor(private httpClient: HttpClient) { }
 

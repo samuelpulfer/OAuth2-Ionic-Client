@@ -59,6 +59,13 @@ export class LocalPersistenceService {
     return this.data.refreshToken;
   }
 
+  public getAuthenticated() {
+    if(this.data.authenticated == null) {
+      return false;
+    }
+    return this.data.authenticated;
+  }
+
   public setExampleData(data: String) {
     this.data.example = data;
     this.store();
@@ -69,6 +76,9 @@ export class LocalPersistenceService {
     this.data.refreshToken = refreshToken;
     this.store();
   }
-
+  public setAuthenticated(auth: boolean) {
+    this.data.authenticated = auth;
+    this.store();
+  }
 
 }
