@@ -19,6 +19,11 @@ export class MenuPage implements OnInit {
       icon: 'lock'
     },
     {
+      title: 'Settings',
+      url: '/menu/settings',
+      icon: 'settings'
+    },
+    {
       title: 'Signin',
       url: '/menu/signin',
       icon: 'log-in'

@@ -9,11 +9,12 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
-import { ServiceWorkerModule } from '@angular/service-worker';
+import { ServiceWorkerModule, SwUpdate } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 
 import { PersistenceModule } from 'angular-persistence';
 import { AppConfigurationService } from './services/app-configuration.service';
+import { LocalPersistenceService } from './services/local-persistence.service';
 
 @NgModule({
   declarations: [AppComponent],
@@ -32,7 +33,41 @@ import { AppConfigurationService } from './services/app-configuration.service';
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule {
+
+  constructor(update: SwUpdate, settings: LocalPersistenceService) {
+    // Update
+    update.available.subscribe(
+      update => {
+        console.log("Update available");
+        settings.setUpdateAvailable(true);
+      },
+      error => {
+        console.log("There was an error while checking for updates");
+        console.log(error);
+      },
+      () => {
+        console.log("Update subscription completed. (something went wrong...)");
+      }
+    );
+    update.activated.subscribe(
+      update => {
+        settings.setUpdateAvailable(false);
+        console.log("Update was activated");
+        window.location.reload(true);
+      }
+    );
+    if(update.isEnabled) {
+      console.log("Update is enabled");
+      setInterval(() => {
+        console.log("checking for updates");
+        update.checkForUpdate().then(() => console.log("successfully checked for update"));
+      }, 60000);
+      console.log("checking for updates");
+      update.checkForUpdate().then(() => console.log("successfully checked for update"));
+    }
+  }
+}
 
 export function AppConfigurationFactory(appConfig: AppConfigurationService) {
   return () => appConfig.ensureInit();

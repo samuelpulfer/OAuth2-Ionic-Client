@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { PersistenceService, StorageType } from 'angular-persistence';
+import { Subject } from 'rxjs/Subject';
 import * as CryptoJS from 'crypto-js';
 
 @Injectable({
@@ -10,6 +11,8 @@ export class LocalPersistenceService {
   private secret: string = "mySuperSecret123"; //max length: 16
 
   private data: any = {};
+
+  private update = new Subject<boolean>();
 
   constructor(private persistenceService: PersistenceService) { 
     this.load();
@@ -47,6 +50,10 @@ export class LocalPersistenceService {
     }
   }
 
+  public getUpdateObservable() {
+    return this.update.asObservable();
+  }
+
   public getExampleData() {
     return this.data.example;
   }
@@ -66,6 +73,13 @@ export class LocalPersistenceService {
     return this.data.authenticated;
   }
 
+  public getUpdateAvailable() {
+    if(this.data.updateavailable == null) {
+      return false;
+    }
+    return this.data.updateavailable;
+  }
+
   public setExampleData(data: String) {
     this.data.example = data;
     this.store();
@@ -76,8 +90,15 @@ export class LocalPersistenceService {
     this.data.refreshToken = refreshToken;
     this.store();
   }
+
   public setAuthenticated(auth: boolean) {
     this.data.authenticated = auth;
+    this.store();
+  }
+
+  public setUpdateAvailable(available: boolean) {
+    this.data.updateavailable = available;
+    this.update.next(available);
     this.store();
   }
 

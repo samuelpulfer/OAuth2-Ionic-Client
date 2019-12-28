@@ -3,19 +3,18 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>Main</ion-title>
+    <ion-title>Settings</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
   <ion-list lines="full" class="ion-no-margin ion-no-padding">
     <ion-item>
-      <ion-label position="stacked">Persistence Example</ion-label>
-      <ion-input type="text" name="example" [(ngModel)]="example"></ion-input>
+      <ion-label position="stacked">Version</ion-label>
+      <ion-input type="text" name="version" [(ngModel)]="version"></ion-input>
     </ion-item>
     <ion-item>
-      <ion-button expand="block" type="button" (click)="btn_pressed()">Store</ion-button>
+      <ion-button expand="block" type="button" (click)="update()" [disabled]="!updatable" >Install update</ion-button>
     </ion-item>
   </ion-list>
-
 </ion-content>

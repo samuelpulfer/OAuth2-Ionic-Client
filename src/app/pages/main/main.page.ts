@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { LoggerService } from '../../services/logger.service';
 import { LocalPersistenceService } from '../../services/local-persistence.service';
-import { AppConfigurationService } from 'src/app/services/app-configuration.service';
 
 @Component({
   selector: 'app-main',
@@ -11,10 +10,8 @@ import { AppConfigurationService } from 'src/app/services/app-configuration.serv
 export class MainPage implements OnInit {
 
   public example: String = "";
-  public version: String = "";
-  constructor(private logger: LoggerService, private persistence: LocalPersistenceService, private config: AppConfigurationService) { 
-    this.version = config.version;
 
+  constructor(private logger: LoggerService, private persistence: LocalPersistenceService) { 
     this.example = this.persistence.getExampleData();
   }
 

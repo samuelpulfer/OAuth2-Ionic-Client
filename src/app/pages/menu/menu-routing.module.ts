@@ -16,6 +16,7 @@ const routes: Routes = [
       { path: 'main', loadChildren: () => import('../main/main.module').then( m => m.MainPageModule) },
       { path: 'signin', loadChildren: () => import('../signin/signin.module').then( m => m.SigninPageModule) },
       { path: 'restricted', loadChildren: () => import('../restricted/restricted.module').then( m => m.RestrictedPageModule) },
+      { path: 'settings', loadChildren: () => import('../settings/settings.module').then( m => m.SettingsPageModule) }
     ]
   }
 ];
