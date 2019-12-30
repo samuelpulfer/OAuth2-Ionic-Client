@@ -10,4 +10,4 @@ Ionic Template with OAuth2
 `ionic serve`
 
 ## Compile as PWA
-`ionic build prod`
+`ionic build --prod --service-worker`
