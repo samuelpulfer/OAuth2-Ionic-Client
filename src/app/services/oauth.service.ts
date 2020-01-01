@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { LoggerService } from './logger.service';
 import { AppConfigurationService } from './app-configuration.service';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
+import { ConnectionService } from 'ng-connection-service';
 import { LocalPersistenceService } from './local-persistence.service';
 
 @Injectable({
@@ -15,22 +16,44 @@ export class OauthService {
     private logger: LoggerService,
     private config: AppConfigurationService,
     private settings: LocalPersistenceService,
-    private http: HttpClient) {
+    private http: HttpClient,
+    private connectionService: ConnectionService) {
       this.authenticated = this.settings.getAuthenticated();
       this.auth.next(this.authenticated);
       this.auth.subscribe(
         auth => {
           this.authenticated = auth;
           this.settings.setAuthenticated(auth);
+          if(auth) {
+            this.status.next("Sie sind nun angemeldet");
+          } else {
+            this.status.next("Sie sind nicht angemeldet");
+          }
+        }
+      );
+      this.connectionService.monitor().subscribe(
+        isConnected => {
+          this.isConnected = isConnected;
+          if(isConnected) {
+            this.status.next("Sie sind wieder online.");
+          } else {
+            this.status.next("Sie sind gerade offline");
+          }
         }
       );
      }
 
   private authenticated: boolean = false;
+  private isConnected: boolean = false;
   private auth = new Subject<boolean>();
+  private status = new Subject<string>();
 
   getAuthObservable() {
     return this.auth.asObservable();
+  }
+
+  getStatusObservable() {
+    return this.status.asObservable();
   }
 
   isAuthenticated() {
@@ -131,35 +154,43 @@ export class OauthService {
       this.logger.debug('First try to get data');
       this.getDataNoAuthCheck(resource).subscribe(
         (data: any[]) => {
-          this.logger.debug('Data received: ' + data);
+          this.logger.debug('Data received:' + data);
+          console.log('Data received', data);
           subscriber.next(data);
           subscriber.complete();
         },
-        error => {
-          // maybe try to refresh the authentication token
-          this.logger.debug('First try failed, try to get the data');
-          this.retreiveToken('none', this.settings.getRefreshToken(), 'refresh_token').subscribe(
-            x => { console.log('this will never happen...'); },
-            error => {
-              this.logger.error('refresh failed, looks like you logged out');
-              this.auth.next(false);
-              subscriber.error(error);
-            },
-            () => {
-              this.getDataNoAuthCheck(resource).subscribe(
-                (data: any[]) => {
-                  this.logger.debug('Data reveiced at second try: ' + data);
-                  subscriber.next(data);
-                  subscriber.complete();
-                },
-                error => {
-                  this.logger.error('Second try failed.. will logout');
-                  this.auth.next(false);
-                  subscriber.error(error);
-                }
-              );
-            }
-          );
+        (error: HttpErrorResponse) => {
+          console.log("there was an error:",error);
+          if(error.status == 401) {
+            // maybe try to refresh the authentication token
+            this.logger.debug('First try failed, try to get the data');
+            this.retreiveToken('none', this.settings.getRefreshToken(), 'refresh_token').subscribe(
+              x => { console.log('this will never happen...'); },
+              error => {
+                this.logger.error('refresh failed, looks like you logged out');
+                this.auth.next(false);
+                subscriber.error(error);
+              },
+              () => {
+                this.getDataNoAuthCheck(resource).subscribe(
+                  (data: any[]) => {
+                    this.logger.debug('Data reveiced at second try: ' + data);
+                    subscriber.next(data);
+                    subscriber.complete();
+                  },
+                  error => {
+                    this.logger.error('Second try failed.. will logout');
+                    this.auth.next(false);
+                    subscriber.error(error);
+                  }
+                );
+              }
+            );
+          } else if(error.status == 511) {
+            this.auth.next(false);
+          } else {
+            this.status.next("Verbindung zum Server konnte nicht aufgebaut werden.");
+          }
         }
       );
     });

@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { RestrictedPageRoutingModule } from './restricted-routing.module';
 
 import { RestrictedPage } from './restricted.page';
+import { StatusToastComponent } from 'src/app/components/status-toast/status-toast.component';
 
 @NgModule({
   imports: [
@@ -15,6 +16,6 @@ import { RestrictedPage } from './restricted.page';
     IonicModule,
     RestrictedPageRoutingModule
   ],
-  declarations: [RestrictedPage]
+  declarations: [RestrictedPage, StatusToastComponent]
 })
 export class RestrictedPageModule {}
