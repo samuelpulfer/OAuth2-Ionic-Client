@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild, Output, EventEmitter } from '@angular/core';
+import * as qq from 'quagga';
 
 @Component({
   selector: 'app-barcodescanner',
@@ -8,9 +9,11 @@ import { Component, OnInit, ViewChild, Output, EventEmitter } from '@angular/cor
 export class BarcodescannerComponent implements OnInit {
 
   @ViewChild('captureinput', {static: false}) input;
-  @Output() barcodeEvent = new EventEmitter<string>();
+  @Output() barcodeEvent;
 
-  constructor() { }
+  constructor() { 
+    this.barcodeEvent = new EventEmitter<string>();
+  }
 
   ngOnInit() {}
 
@@ -20,9 +23,35 @@ export class BarcodescannerComponent implements OnInit {
 
   getInput(event) {
     console.log(event);
-
-    let barcode = "243345"
-    this.barcodeEvent.emit(barcode);
+    let src = URL.createObjectURL(event.target.files[0]);
+    qq.decodeSingle({
+      src: src,
+      numOfWorkers: 0,  // Needs to be 0 when used within node
+      locate: true,
+      inputStream: {
+          size: 800  // restrict input-size to be 800px in width (long-side)
+      },
+      decoder: {
+          readers: [
+            "code_128_reader",
+            "ean_reader",
+            "ean_8_reader",
+            "code_39_reader",
+            "code_39_vin_reader",
+            "codabar_reader",
+            "upc_reader",
+            "upc_e_reader",
+            "i2of5_reader",
+            "2of5_reader",
+            "code_93_reader"
+          ] // List of active readers
+        },
+    }, result => {
+      if(result != null && result.codeResult) {
+        this.barcodeEvent.emit(result.codeResult.code);
+      } else {
+        console.log("Barcode not detected");
+      }
+    });
   }
-
 }
