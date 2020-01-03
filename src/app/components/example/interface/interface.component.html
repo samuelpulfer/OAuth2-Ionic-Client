@@ -1,0 +1,20 @@
+<ion-list lines="full" class="ion-no-margin ion-no-padding">
+  <ion-item>
+    <table>
+      <tr>
+        <td>
+          <ion-label position="stacked">IP Address</ion-label>
+          <ion-input type="text" name="ipaddress" [(ngModel)]="ip" readonly></ion-input>
+        </td>
+        <td>
+          <ion-label position="stacked">Hostname</ion-label>
+          <ion-input type="text" name="hostname" [(ngModel)]="host" readonly></ion-input>
+        </td>
+        <td>
+          <ion-label position="stacked">Mac-Address</ion-label>
+          <ion-input type="text" name="macaddress" [(ngModel)]="mac" readonly></ion-input>
+        </td>
+      </tr>
+    </table>
+  </ion-item>
+</ion-list>

@@ -25,4 +25,8 @@ export class RestrictedPage implements OnInit {
       () => console.log("completed")
     )
   }
+
+  getBarcode(barcode: string) {
+    console.log(barcode);
+  }
 }

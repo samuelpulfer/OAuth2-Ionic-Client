@@ -9,5 +9,7 @@
 
 <ion-content>
 <ion-button type="button" (click)="doit()">Toast Test</ion-button>
+<app-device></app-device>
+<app-barcodescanner (barcodeEvent)="getBarcode($event)"></app-barcodescanner>
 <app-status-toast></app-status-toast>
 </ion-content>

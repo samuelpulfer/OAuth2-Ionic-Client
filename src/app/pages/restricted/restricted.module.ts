@@ -8,6 +8,9 @@ import { RestrictedPageRoutingModule } from './restricted-routing.module';
 
 import { RestrictedPage } from './restricted.page';
 import { StatusToastComponent } from 'src/app/components/status-toast/status-toast.component';
+import { DeviceComponent } from 'src/app/components/example/device/device.component';
+import { InterfaceComponent } from 'src/app/components/example/interface/interface.component';
+import { BarcodescannerComponent } from 'src/app/components/example/barcodescanner/barcodescanner.component';
 
 @NgModule({
   imports: [
@@ -16,6 +19,6 @@ import { StatusToastComponent } from 'src/app/components/status-toast/status-toa
     IonicModule,
     RestrictedPageRoutingModule
   ],
-  declarations: [RestrictedPage, StatusToastComponent]
+  declarations: [RestrictedPage, StatusToastComponent, DeviceComponent, InterfaceComponent, BarcodescannerComponent]
 })
 export class RestrictedPageModule {}

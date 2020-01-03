@@ -1,0 +1,8 @@
+<ion-list lines="full" class="ion-no-margin ion-no-padding">
+  <div *ngFor="let cur of interfaces">
+    <app-interface [interface]="cur"></app-interface>
+  </div>
+  <ion-item>
+    <ion-button expand="block" type="button" (click)="addInterface()" >Add interface</ion-button>
+  </ion-item>
+</ion-list>
